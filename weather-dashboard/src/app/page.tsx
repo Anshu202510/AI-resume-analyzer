@@ -12,19 +12,20 @@ import { SavedCity } from '@/types/weather';
 import toast from 'react-hot-toast';
 
 export default function Home() {
-  const {
-    currentWeather,
-    forecast,
-    loading,
-    error,
-    unit,
-    setCurrentWeather,
-    setForecast,
-    setLoading,
-    setError,
-    setSavedCities,
-    addSavedCity,
-  } = useWeatherStore();
+ const {
+  currentWeather,
+  forecast,
+  loading,
+  error,
+  unit,
+  savedCities,
+  setCurrentWeather,
+  setForecast,
+  setLoading,
+  setError,
+  setSavedCities,
+  addSavedCity,
+} = useWeatherStore();
 
   const [isInitialized, setIsInitialized] = useState(false);
 
@@ -44,9 +45,7 @@ export default function Home() {
 
   // Save cities to localStorage whenever they change
   useEffect(() => {
-    const savedCities = useWeatherStore((state) => state.savedCities);
-    localStorage.setItem('savedCities', JSON.stringify(savedCities));
-  }, [useWeatherStore((state) => state.savedCities)]);
+ const savedCities = useWeatherStore((state) => state.savedCities);
 
   // Load default city on first load
   useEffect(() => {
