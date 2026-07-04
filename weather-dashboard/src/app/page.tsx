@@ -12,26 +12,27 @@ import { SavedCity } from '@/types/weather';
 import toast from 'react-hot-toast';
 
 export default function Home() {
- const {
-  currentWeather,
-  forecast,
-  loading,
-  error,
-  unit,
-  savedCities,
-  setCurrentWeather,
-  setForecast,
-  setLoading,
-  setError,
-  setSavedCities,
-  addSavedCity,
-} = useWeatherStore();
+  const {
+    currentWeather,
+    forecast,
+    loading,
+    error,
+    unit,
+    savedCities,
+    setCurrentWeather,
+    setForecast,
+    setLoading,
+    setError,
+    setSavedCities,
+    addSavedCity,
+  } = useWeatherStore();
 
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Load saved cities from localStorage
   useEffect(() => {
     const saved = localStorage.getItem('savedCities');
+
     if (saved) {
       try {
         const cities = JSON.parse(saved);
@@ -40,19 +41,21 @@ export default function Home() {
         console.error('Failed to load saved cities', error);
       }
     }
+
     setIsInitialized(true);
   }, [setSavedCities]);
 
-  // Save cities to localStorage whenever they change
+  // Save cities whenever they change
   useEffect(() => {
- const savedCities = useWeatherStore((state) => state.savedCities);
+    localStorage.setItem('savedCities', JSON.stringify(savedCities));
+  }, [savedCities]);
 
-  // Load default city on first load
+  // Load default city
   useEffect(() => {
     if (isInitialized && !currentWeather) {
       handleSearch('London');
     }
-  }, [isInitialized]);
+  }, [isInitialized, currentWeather]);
 
   const handleSearch = async (city: string) => {
     setLoading(true);
@@ -74,7 +77,6 @@ export default function Home() {
         country: weather.sys.country,
       };
 
-      const savedCities = useWeatherStore((state) => state.savedCities);
       if (!savedCities.find((c) => c.name === weather.name)) {
         addSavedCity(newCity);
       }
@@ -113,11 +115,14 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h1 className="text-4xl font-bold text-gray-900">🌤️ Weather Dashboard</h1>
+              <h1 className="text-4xl font-bold text-gray-900">
+                🌤️ Weather Dashboard
+              </h1>
               <p className="mt-2 text-gray-600">
                 Get real-time weather forecasts powered by OpenWeatherMap
               </p>
             </div>
+
             <UnitToggle />
           </div>
 
@@ -133,7 +138,9 @@ export default function Home() {
               <div className="mb-4 inline-block">
                 <div className="h-12 w-12 animate-spin rounded-full border-4 border-blue-200 border-t-blue-600"></div>
               </div>
-              <p className="text-lg font-semibold text-gray-700">Loading weather data...</p>
+              <p className="text-lg font-semibold text-gray-700">
+                Loading weather data...
+              </p>
             </div>
           </div>
         )}
@@ -147,13 +154,10 @@ export default function Home() {
 
         {currentWeather && (
           <div className="space-y-8">
-            {/* Current Weather */}
             <CurrentWeather data={currentWeather} />
 
-            {/* Forecast */}
             {forecast && <Forecast data={forecast} />}
 
-            {/* Saved Cities */}
             <SavedCities onCityClick={handleSavedCityClick} />
           </div>
         )}
